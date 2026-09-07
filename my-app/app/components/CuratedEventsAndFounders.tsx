@@ -21,6 +21,10 @@ import {
   Award,
   ChevronLeft,
   ChevronRight,
+  Lock,
+  Code2,
+  Compass,
+  Radio,
 } from "lucide-react";
 
 interface CuratedItem {
@@ -120,9 +124,9 @@ const allCuratedItems: CuratedItem[] = [
   {
     id: 4,
     title: "Founders Mixer: The Loft",
-    host: "Aarav Mehta",
-    hostRole: "Design Lead @ Freehand Labs",
-    hostImage: "/images/people_aarav_mehta.jpg",
+    host: "Tanvi Shah",
+    hostRole: "Community Partner · The Loft Mumbai",
+    hostImage: "/images/people_priya_rao.jpg",
     date: "Fri, Oct 24 · 7:00 PM",
     venue: "The Loft, Lower Parel, Mumbai",
     readTime: "94 Founders Inside",
@@ -168,9 +172,9 @@ const allCuratedItems: CuratedItem[] = [
   {
     id: 6,
     title: "AI Builders & Infrastructure Deep Tech Jam",
-    host: "Ankit Kulkarni",
-    hostRole: "Founding Engineer · Distributed Systems",
-    hostImage: "/images/event_ai_builders.jpg",
+    host: "Nayla Baig",
+    hostRole: "Distributed Systems Architect",
+    hostImage: "/images/people_maya_joshi.jpg",
     date: "Sat, Nov 02 · 4:00 PM",
     venue: "Indiranagar, Bengaluru",
     readTime: "68 Tech Leads Verified",
@@ -248,34 +252,669 @@ const categories = [
   "Investors",
 ];
 
-// Pinterest-style card component matching user's reference code
-function PinterestCuratedCard({
+// Bespoke Card Component: Tailored archetypes for each gathering format (breaks monotony)
+function BespokeCuratedCard({
   item,
   onOpenModal,
 }: {
   item: CuratedItem;
   onOpenModal: (item: CuratedItem) => void;
 }) {
-  const angles = [-1.5, 1.8, -1.2, 2.1, -2, 1.4, -1.8, 1.5];
+  const angles = [-1.2, 1.5, -0.8, 1.8, -1.5, 1.2, -1.0, 1.4];
   const rot = angles[(item.id - 1) % angles.length];
 
+  // Archetype 1: Flagship Syndicate (item.id === 1)
+  if (item.id === 1) {
+    return (
+      <motion.div
+        whileHover={{ scale: 1.025, rotate: 0, y: -6 }}
+        transition={{ type: "spring", stiffness: 320, damping: 22 }}
+        style={{ transform: `rotate(${rot}deg)` }}
+        className="bg-[#FCFBF8] rounded-[2rem] p-7 md:p-8 border-2 border-amber-300/60 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden group flex flex-col justify-between text-left"
+      >
+        <div>
+          {/* Header */}
+          <div className="flex items-center justify-between gap-2 mb-4">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100/80 border border-amber-200 text-[10px] font-mono font-bold text-amber-950">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>FLAGSHIP SYNDICATE · WEEKLY</span>
+            </div>
+            <span className="text-[10px] font-mono font-bold text-neutral-600 bg-white px-2.5 py-0.5 rounded-full border border-neutral-200 shadow-2xs">
+              {item.attendees} Members
+            </span>
+          </div>
+
+          {/* Banner Thumbnail */}
+          <div className="relative w-full h-36 rounded-2xl overflow-hidden mb-4 border border-black/5 shadow-xs">
+            <Image
+              src={item.image}
+              alt={item.title}
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-[11px] font-mono text-white font-medium">
+              <span className="flex items-center gap-1">
+                <Calendar className="w-3 h-3 text-[#FFD45C]" />
+                Weekly Cohorts
+              </span>
+              <span className="flex items-center gap-1">
+                <MapPin className="w-3 h-3 text-emerald-300" />
+                The Loft & Partner Venues
+              </span>
+            </div>
+          </div>
+
+          {/* Title */}
+          <h3 className="text-lg md:text-xl font-black text-neutral-950 leading-[1.25] tracking-tight mb-2.5 group-hover:text-[#6D28D9] transition-colors">
+            {item.title}
+          </h3>
+
+          {/* Description */}
+          <p className="font-serif italic text-sm text-neutral-700 leading-relaxed mb-3.5">
+            &ldquo;{item.desc}&rdquo;
+          </p>
+
+          {/* Syndicate Micro-Perk Box */}
+          <div className="p-2.5 rounded-xl bg-amber-50/80 border border-amber-200/80 text-[11px] text-amber-950 font-medium mb-4 flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-amber-700 shrink-0" />
+            <span>Peer pitch tear-downs · Private Syndicate Telegram</span>
+          </div>
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-1.5 mb-5">
+            {item.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-[10px] font-mono font-semibold text-neutral-600 bg-white px-2.5 py-0.5 rounded-md border border-neutral-200"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Single Clean Host Row */}
+        <div className="border-t border-amber-200/60 pt-4 flex items-center justify-between mt-auto">
+          <div className="flex items-center gap-2.5">
+            <div className="relative w-8 h-8 rounded-full overflow-hidden border border-neutral-300 shrink-0">
+              <Image
+                src={item.hostImage}
+                alt=""
+                fill
+                sizes="32px"
+                className="object-cover"
+              />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-neutral-950 leading-none">
+                {item.host}
+              </p>
+              <p className="text-[10px] text-neutral-500 font-mono mt-0.5">
+                {item.hostRole.split("·")[0]}
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => onOpenModal(item)}
+            className="px-4 py-1.5 rounded-full bg-neutral-950 text-white text-xs font-bold hover:bg-neutral-800 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+          >
+            <span>Inspect Circle</span>
+            <ArrowRight className="w-3 h-3 text-[#FFD45C]" />
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
+
+  // Archetype 2: Physical Admission Pass / Ticket Stub (item.id === 4 - Founders Mixer)
+  if (item.id === 4) {
+    return (
+      <motion.div
+        whileHover={{ scale: 1.025, rotate: 0, y: -6 }}
+        transition={{ type: "spring", stiffness: 320, damping: 22 }}
+        style={{ transform: `rotate(${rot}deg)` }}
+        className="bg-white rounded-[2rem] p-7 md:p-8 border-2 border-neutral-300 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden group flex flex-col justify-between text-left"
+      >
+        {/* Physical Ticket Edge Cutout Notches */}
+        <div className="absolute top-[220px] -left-3 w-6 h-6 rounded-full bg-[#FAFAFA] border-r-2 border-neutral-300 z-10 pointer-events-none" />
+        <div className="absolute top-[220px] -right-3 w-6 h-6 rounded-full bg-[#FAFAFA] border-l-2 border-neutral-300 z-10 pointer-events-none" />
+
+        <div>
+          {/* Header */}
+          <div className="flex items-center justify-between gap-2 mb-4">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-950 text-white text-[10px] font-mono font-bold">
+              <Ticket className="w-3 h-3 text-[#FFD45C]" />
+              <span>DOOR PASS #094 · VERIFIED ENTRY</span>
+            </div>
+            <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+              94 Verified
+            </span>
+          </div>
+
+          {/* Banner Thumbnail */}
+          <div className="relative w-full h-36 rounded-2xl overflow-hidden mb-4 border border-neutral-200 shadow-xs">
+            <Image
+              src={item.image}
+              alt={item.title}
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-[11px] font-mono text-white font-medium">
+              <span className="flex items-center gap-1">
+                <Calendar className="w-3 h-3 text-[#FFD45C]" />
+                Fri, Oct 24 · 7:00 PM
+              </span>
+              <span className="flex items-center gap-1">
+                <MapPin className="w-3 h-3 text-emerald-300" />
+                The Loft, Lower Parel
+              </span>
+            </div>
+          </div>
+
+          {/* Title */}
+          <h3 className="text-lg md:text-xl font-black text-neutral-950 leading-[1.25] tracking-tight mb-2.5 group-hover:text-[#6D28D9] transition-colors">
+            {item.title}
+          </h3>
+
+          {/* Description */}
+          <p className="font-serif italic text-sm text-neutral-700 leading-relaxed mb-3.5">
+            &ldquo;{item.desc}&rdquo;
+          </p>
+
+          {/* Perforated Dashed Ticket Line */}
+          <div className="border-t-2 border-dashed border-neutral-200 my-3.5" />
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-1.5 mb-4">
+            {item.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-[10px] font-mono font-semibold text-neutral-600 bg-neutral-50 px-2.5 py-0.5 rounded-md border border-neutral-200"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Single Clean Host Row */}
+        <div className="border-t border-neutral-200 pt-4 flex items-center justify-between mt-auto">
+          <div className="flex items-center gap-2.5">
+            <div className="relative w-8 h-8 rounded-full overflow-hidden border border-neutral-300 shrink-0">
+              <Image
+                src={item.hostImage}
+                alt=""
+                fill
+                sizes="32px"
+                className="object-cover"
+              />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-neutral-950 leading-none">
+                {item.host}
+              </p>
+              <p className="text-[10px] text-neutral-500 font-mono mt-0.5">
+                {item.hostRole.split("·")[0]}
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => onOpenModal(item)}
+            className="px-4 py-1.5 rounded-full bg-neutral-950 text-white text-xs font-bold hover:bg-neutral-800 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+          >
+            <Ticket className="w-3.5 h-3.5 text-[#FFD45C]" />
+            <span>Door Pass</span>
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
+
+  // Archetype 3: Confidential Executive Dinner (item.id === 7 - First Cheques)
+  if (item.id === 7) {
+    return (
+      <motion.div
+        whileHover={{ scale: 1.025, rotate: 0, y: -6 }}
+        transition={{ type: "spring", stiffness: 320, damping: 22 }}
+        style={{ transform: `rotate(${rot}deg)` }}
+        className="bg-[#F8FAFC] rounded-[2rem] p-7 md:p-8 border-2 border-neutral-300 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden group flex flex-col justify-between text-left"
+      >
+        <div>
+          {/* Header */}
+          <div className="flex items-center justify-between gap-2 mb-4">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-200/80 border border-slate-300 text-[10px] font-mono font-bold text-slate-800">
+              <Lock className="w-3 h-3 text-[#6D28D9]" />
+              <span>CHATHAM HOUSE DINNER</span>
+            </div>
+            <span className="text-[10px] font-mono font-bold text-neutral-700 bg-white px-2.5 py-0.5 rounded-full border border-neutral-200 shadow-2xs">
+              {item.attendees} Angels
+            </span>
+          </div>
+
+          {/* Banner Thumbnail */}
+          <div className="relative w-full h-36 rounded-2xl overflow-hidden mb-4 border border-black/5 shadow-xs">
+            <Image
+              src={item.image}
+              alt={item.title}
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-[11px] font-mono text-white font-medium">
+              <span className="flex items-center gap-1">
+                <Calendar className="w-3 h-3 text-[#FFD45C]" />
+                Monthly Closed Dinner
+              </span>
+              <span className="flex items-center gap-1">
+                <MapPin className="w-3 h-3 text-emerald-300" />
+                BKC, Mumbai
+              </span>
+            </div>
+          </div>
+
+          {/* Title */}
+          <h3 className="text-lg md:text-xl font-black text-neutral-950 leading-[1.25] tracking-tight mb-2.5 group-hover:text-[#6D28D9] transition-colors">
+            {item.title}
+          </h3>
+
+          {/* Description */}
+          <p className="font-serif italic text-sm text-neutral-700 leading-relaxed mb-3.5">
+            &ldquo;{item.desc}&rdquo;
+          </p>
+
+          {/* Cheque Deployment Badge */}
+          <div className="p-2.5 rounded-xl bg-white border border-neutral-200 text-[11px] font-mono font-semibold text-neutral-800 mb-4 flex items-center justify-between">
+            <span className="text-neutral-500">Deployment Rail:</span>
+            <span className="text-[#6D28D9] font-bold">₹50L – ₹2Cr Lead</span>
+          </div>
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-1.5 mb-5">
+            {item.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-[10px] font-mono font-semibold text-neutral-600 bg-white px-2.5 py-0.5 rounded-md border border-neutral-200"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Single Clean Host Row */}
+        <div className="border-t border-neutral-200 pt-4 flex items-center justify-between mt-auto">
+          <div className="flex items-center gap-2.5">
+            <div className="relative w-8 h-8 rounded-full overflow-hidden border border-neutral-300 shrink-0">
+              <Image
+                src={item.hostImage}
+                alt=""
+                fill
+                sizes="32px"
+                className="object-cover"
+              />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-neutral-950 leading-none">
+                {item.host}
+              </p>
+              <p className="text-[10px] text-neutral-500 font-mono mt-0.5">
+                {item.hostRole.split("·")[0]}
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => onOpenModal(item)}
+            className="px-4 py-1.5 rounded-full bg-neutral-950 text-white text-xs font-bold hover:bg-neutral-800 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+          >
+            <Lock className="w-3 h-3 text-[#FFD45C]" />
+            <span>Syndicate Brief</span>
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
+
+  // Archetype 4: Design Architecture Salon (item.id === 2 - BDW 2026)
+  if (item.id === 2) {
+    return (
+      <motion.div
+        whileHover={{ scale: 1.025, rotate: 0, y: -6 }}
+        transition={{ type: "spring", stiffness: 320, damping: 22 }}
+        style={{ transform: `rotate(${rot}deg)` }}
+        className="bg-[#FAF5FF] rounded-[2rem] p-7 md:p-8 border-2 border-violet-200/80 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden group flex flex-col justify-between text-left"
+      >
+        <div>
+          {/* Header */}
+          <div className="flex items-center justify-between gap-2 mb-4">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-100 border border-violet-200 text-[10px] font-mono font-bold text-[#6D28D9]">
+              <Sparkles className="w-3 h-3 text-[#6D28D9]" />
+              <span>DESIGN & STARTUPS · BDW 2026</span>
+            </div>
+            <span className="text-[10px] font-mono font-bold text-neutral-700 bg-white px-2.5 py-0.5 rounded-full border border-neutral-200 shadow-2xs">
+              {item.attendees} in Room
+            </span>
+          </div>
+
+          {/* Banner Thumbnail */}
+          <div className="relative w-full h-36 rounded-2xl overflow-hidden mb-4 border border-violet-100 shadow-xs">
+            <Image
+              src={item.image}
+              alt={item.title}
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-[11px] font-mono text-white font-medium">
+              <span className="flex items-center gap-1">
+                <Calendar className="w-3 h-3 text-[#FFD45C]" />
+                Thu, Oct 30 · 6:30 PM
+              </span>
+              <span className="flex items-center gap-1">
+                <MapPin className="w-3 h-3 text-emerald-300" />
+                NCPA, South Mumbai
+              </span>
+            </div>
+          </div>
+
+          {/* Title */}
+          <h3 className="text-lg md:text-xl font-black text-neutral-950 leading-[1.25] tracking-tight mb-2.5 group-hover:text-[#6D28D9] transition-colors">
+            {item.title}
+          </h3>
+
+          {/* Description */}
+          <p className="font-serif italic text-sm text-neutral-700 leading-relaxed mb-3.5">
+            &ldquo;{item.desc}&rdquo;
+          </p>
+
+          {/* Design Salon Purpose Tag */}
+          <div className="p-2.5 rounded-xl bg-white/90 border border-violet-200/80 text-[11px] text-neutral-800 font-medium mb-4 flex items-center gap-2">
+            <Radio className="w-4 h-4 text-[#6D28D9] shrink-0" />
+            <span>Co-founder matchmaking unlocked inside NCPA Room</span>
+          </div>
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-1.5 mb-5">
+            {item.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-[10px] font-mono font-semibold text-neutral-600 bg-white px-2.5 py-0.5 rounded-md border border-neutral-200"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Single Clean Host Row */}
+        <div className="border-t border-violet-200/60 pt-4 flex items-center justify-between mt-auto">
+          <div className="flex items-center gap-2.5">
+            <div className="relative w-8 h-8 rounded-full overflow-hidden border border-neutral-300 shrink-0">
+              <Image
+                src={item.hostImage}
+                alt=""
+                fill
+                sizes="32px"
+                className="object-cover"
+              />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-neutral-950 leading-none">
+                {item.host}
+              </p>
+              <p className="text-[10px] text-neutral-500 font-mono mt-0.5">
+                {item.hostRole.split("·")[0]}
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => onOpenModal(item)}
+            className="px-4 py-1.5 rounded-full bg-neutral-950 text-white text-xs font-bold hover:bg-neutral-800 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+          >
+            <span>Salon Access</span>
+            <ArrowRight className="w-3 h-3 text-[#FFD45C]" />
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
+
+  // Archetype 5: Technical Monospace Terminal (item.id === 5 - Bootstrapped SaaS)
+  if (item.id === 5) {
+    return (
+      <motion.div
+        whileHover={{ scale: 1.025, rotate: 0, y: -6 }}
+        transition={{ type: "spring", stiffness: 320, damping: 22 }}
+        style={{ transform: `rotate(${rot}deg)` }}
+        className="bg-[#F8FAFC] rounded-[2rem] p-7 md:p-8 border-2 border-slate-300 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden group flex flex-col justify-between text-left"
+      >
+        <div>
+          {/* Header */}
+          <div className="flex items-center justify-between gap-2 mb-4">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[10px] font-mono font-bold text-emerald-800">
+              <Code2 className="w-3 h-3 text-emerald-600" />
+              <span>BUILDERS GUILD · REVENUE BENCHMARKS</span>
+            </div>
+            <span className="text-[10px] font-mono font-bold text-neutral-700 bg-white px-2.5 py-0.5 rounded-full border border-neutral-200 shadow-2xs">
+              {item.attendees} Builders
+            </span>
+          </div>
+
+          {/* Banner Thumbnail */}
+          <div className="relative w-full h-36 rounded-2xl overflow-hidden mb-4 border border-slate-200 shadow-xs">
+            <Image
+              src={item.image}
+              alt={item.title}
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-[11px] font-mono text-white font-medium">
+              <span className="flex items-center gap-1">
+                <Calendar className="w-3 h-3 text-[#FFD45C]" />
+                Weekly Sync
+              </span>
+              <span className="flex items-center gap-1">
+                <MapPin className="w-3 h-3 text-emerald-300" />
+                Indiranagar Cowork
+              </span>
+            </div>
+          </div>
+
+          {/* Title */}
+          <h3 className="text-lg md:text-xl font-black text-neutral-950 leading-[1.25] tracking-tight mb-2.5 group-hover:text-[#6D28D9] transition-colors">
+            {item.title}
+          </h3>
+
+          {/* Description */}
+          <p className="font-serif italic text-sm text-neutral-700 leading-relaxed mb-3.5">
+            &ldquo;{item.desc}&rdquo;
+          </p>
+
+          {/* Monospace Code Pill */}
+          <div className="p-2.5 rounded-xl bg-white border border-slate-200 text-[11px] font-mono text-neutral-700 mb-4 flex items-center justify-between">
+            <span>Stack & Benchmarks:</span>
+            <span className="font-bold text-emerald-700">Go / Rust · Zero Hype</span>
+          </div>
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-1.5 mb-5">
+            {item.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-[10px] font-mono font-semibold text-neutral-600 bg-white px-2.5 py-0.5 rounded-md border border-neutral-200"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Single Clean Host Row */}
+        <div className="border-t border-slate-200 pt-4 flex items-center justify-between mt-auto">
+          <div className="flex items-center gap-2.5">
+            <div className="relative w-8 h-8 rounded-full overflow-hidden border border-neutral-300 shrink-0">
+              <Image
+                src={item.hostImage}
+                alt=""
+                fill
+                sizes="32px"
+                className="object-cover"
+              />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-neutral-950 leading-none">
+                {item.host}
+              </p>
+              <p className="text-[10px] text-neutral-500 font-mono mt-0.5">
+                {item.hostRole.split("·")[0]}
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => onOpenModal(item)}
+            className="px-4 py-1.5 rounded-full bg-neutral-950 text-white text-xs font-bold hover:bg-neutral-800 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+          >
+            <Code2 className="w-3.5 h-3.5 text-[#FFD45C]" />
+            <span>Code Specs</span>
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
+
+  // Archetype 6: Sunset Rooftop Salon (item.id === 8 - Creative Directors 3D)
+  if (item.id === 8) {
+    return (
+      <motion.div
+        whileHover={{ scale: 1.025, rotate: 0, y: -6 }}
+        transition={{ type: "spring", stiffness: 320, damping: 22 }}
+        style={{ transform: `rotate(${rot}deg)` }}
+        className="bg-[#FFF8F1] rounded-[2rem] p-7 md:p-8 border-2 border-orange-200/80 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden group flex flex-col justify-between text-left"
+      >
+        <div>
+          {/* Header */}
+          <div className="flex items-center justify-between gap-2 mb-4">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100 border border-orange-200 text-[10px] font-mono font-bold text-orange-950">
+              <Compass className="w-3 h-3 text-orange-600" />
+              <span>SUNSET SALON · 3D SPATIAL</span>
+            </div>
+            <span className="text-[10px] font-mono font-bold text-neutral-700 bg-white px-2.5 py-0.5 rounded-full border border-neutral-200 shadow-2xs">
+              {item.attendees} Creatives
+            </span>
+          </div>
+
+          {/* Taller Panoramic Banner Thumbnail */}
+          <div className="relative w-full h-40 rounded-2xl overflow-hidden mb-4 border border-orange-100 shadow-xs">
+            <Image
+              src={item.image}
+              alt={item.title}
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-[11px] font-mono text-white font-medium">
+              <span className="flex items-center gap-1">
+                <Calendar className="w-3 h-3 text-[#FFD45C]" />
+                Sun, Nov 09 · 6:00 PM
+              </span>
+              <span className="flex items-center gap-1">
+                <MapPin className="w-3 h-3 text-emerald-300" />
+                Koramangala Rooftop
+              </span>
+            </div>
+          </div>
+
+          {/* Title */}
+          <h3 className="text-lg md:text-xl font-black text-neutral-950 leading-[1.25] tracking-tight mb-2.5 group-hover:text-[#6D28D9] transition-colors">
+            {item.title}
+          </h3>
+
+          {/* Description */}
+          <p className="font-serif italic text-sm text-neutral-700 leading-relaxed mb-3.5">
+            &ldquo;{item.desc}&rdquo;
+          </p>
+
+          {/* Atmosphere Note */}
+          <div className="p-2.5 rounded-xl bg-white/90 border border-orange-200/80 text-[11px] text-orange-950 font-medium mb-4 flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-orange-600 shrink-0" />
+            <span>High-res work projections & cocktail hour</span>
+          </div>
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-1.5 mb-5">
+            {item.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-[10px] font-mono font-semibold text-neutral-600 bg-white px-2.5 py-0.5 rounded-md border border-neutral-200"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Single Clean Host Row */}
+        <div className="border-t border-orange-200/60 pt-4 flex items-center justify-between mt-auto">
+          <div className="flex items-center gap-2.5">
+            <div className="relative w-8 h-8 rounded-full overflow-hidden border border-neutral-300 shrink-0">
+              <Image
+                src={item.hostImage}
+                alt=""
+                fill
+                sizes="32px"
+                className="object-cover"
+              />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-neutral-950 leading-none">
+                {item.host}
+              </p>
+              <p className="text-[10px] text-neutral-500 font-mono mt-0.5">
+                {item.hostRole.split("·")[0]}
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => onOpenModal(item)}
+            className="px-4 py-1.5 rounded-full bg-neutral-950 text-white text-xs font-bold hover:bg-neutral-800 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+          >
+            <span>RSVP Rooftop</span>
+            <ArrowRight className="w-3 h-3 text-[#FFD45C]" />
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
+
+  // Archetype Default / Universal: Clean, refined editorial card (id === 3 or 6)
   return (
     <motion.div
-      whileHover={{ scale: 1.03, rotate: 0, y: -8 }}
+      whileHover={{ scale: 1.025, rotate: 0, y: -6 }}
       transition={{ type: "spring", stiffness: 320, damping: 22 }}
       style={{ transform: `rotate(${rot}deg)` }}
-      className={`${item.color} rounded-[2rem] p-7 md:p-8 border border-neutral-200/80 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden group cursor-default flex flex-col justify-between text-left`}
+      className={`${item.color} rounded-[2rem] p-7 md:p-8 border-2 border-neutral-200/90 shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden group flex flex-col justify-between text-left`}
     >
-      {/* Pinterest Washi Tape Decorator */}
-      <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-16 h-4 bg-white/70 backdrop-blur-sm rounded-xs rotate-[-1deg] border border-black/5 shadow-xs pointer-events-none group-hover:opacity-70 transition-opacity" />
-
       <div>
         {/* Top Badges */}
         <div className="flex items-center justify-between gap-2 mb-4">
-          <span className="text-[10px] font-bold text-neutral-700 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full border border-black/5 shadow-xs">
+          <span className="text-[10px] font-mono font-bold text-neutral-700 bg-white px-3 py-1 rounded-full border border-neutral-200 shadow-2xs">
             {item.badge}
           </span>
-          <span className="text-[10px] font-semibold text-neutral-500 flex items-center gap-1">
+          <span className="text-[10px] font-mono font-bold text-neutral-600 flex items-center gap-1">
             <Users className="w-3.5 h-3.5 text-neutral-400" />
             {item.attendees} Verified
           </span>
@@ -304,21 +943,21 @@ function PinterestCuratedCard({
         </div>
 
         {/* Title */}
-        <h3 className="text-lg md:text-xl font-black text-gray-900 leading-[1.25] tracking-tight mb-3 group-hover:text-[#6D28D9] transition-colors">
+        <h3 className="text-lg md:text-xl font-black text-neutral-950 leading-[1.25] tracking-tight mb-2.5 group-hover:text-[#6D28D9] transition-colors">
           {item.title}
         </h3>
 
         {/* Description Quote */}
-        <p className="font-serif italic text-sm sm:text-[14px] text-gray-800/90 leading-relaxed mb-4">
+        <p className="font-serif italic text-sm text-neutral-700 leading-relaxed mb-4">
           &ldquo;{item.desc}&rdquo;
         </p>
 
         {/* Takeaway Chips */}
-        <div className="flex flex-wrap gap-1.5 mb-6">
+        <div className="flex flex-wrap gap-1.5 mb-5">
           {item.tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
-              className="text-[10px] font-bold text-neutral-600 bg-white/70 px-2.5 py-0.5 rounded-full border border-black/[0.04]"
+              className="text-[10px] font-mono font-semibold text-neutral-600 bg-white px-2.5 py-0.5 rounded-md border border-neutral-200"
             >
               #{tag}
             </span>
@@ -327,42 +966,34 @@ function PinterestCuratedCard({
       </div>
 
       {/* Footer / Author Attribution */}
-      <div className="border-t border-black/[0.08] pt-4 flex items-center justify-between mt-auto">
+      <div className="border-t border-neutral-200/80 pt-4 flex items-center justify-between mt-auto">
         <div className="flex items-center gap-2.5">
           <div className="relative w-8 h-8 rounded-full overflow-hidden border border-neutral-300 shrink-0">
             <Image
               src={item.hostImage}
-              alt={item.host}
+              alt=""
               fill
               sizes="32px"
               className="object-cover"
             />
           </div>
           <div>
-            <p className="text-xs font-bold text-gray-900 leading-none">
+            <p className="text-xs font-bold text-neutral-950 leading-none">
               {item.host}
             </p>
-            <p className="text-[10px] text-neutral-500 mt-0.5 truncate max-w-[120px]">
+            <p className="text-[10px] text-neutral-500 font-mono mt-0.5">
               {item.hostRole.split("·")[0]}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => onOpenModal(item)}
-            className="px-3.5 py-1.5 rounded-full bg-white text-neutral-900 text-[11px] font-bold hover:bg-neutral-900 hover:text-white transition-colors border border-black/5 shadow-xs cursor-pointer"
-          >
-            Insights
-          </button>
-          <button
-            onClick={() => onOpenModal(item)}
-            className="w-7 h-7 rounded-full bg-black/5 hover:bg-neutral-900 hover:text-white text-neutral-800 flex items-center justify-center transition-colors cursor-pointer"
-            title="View Details"
-          >
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
+        <button
+          onClick={() => onOpenModal(item)}
+          className="px-4 py-1.5 rounded-full bg-neutral-950 text-white text-xs font-bold hover:bg-neutral-800 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+        >
+          <span>Insights</span>
+          <ArrowRight className="w-3 h-3 text-[#FFD45C]" />
+        </button>
       </div>
     </motion.div>
   );
@@ -444,9 +1075,21 @@ export function CuratedEventsAndFounders() {
   };
 
   return (
-    <section id="events" className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-20 border-t border-neutral-200 text-neutral-900 bg-[#FAFAFA]">
+    <section id="events" className="relative max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-20 border-t border-neutral-200 text-neutral-900 bg-[#FAFAFA] overflow-hidden">
+      {/* Architectural Brand Watermark */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden select-none z-0">
+        <div className="relative w-[700px] sm:w-[950px] md:w-[1200px] h-[360px] opacity-[0.035] grayscale contrast-200">
+          <Image
+            src="/kinjo.svg"
+            alt="Kinjo Brand Mark"
+            fill
+            className="object-contain"
+          />
+        </div>
+      </div>
+
       {/* Header & Search */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 text-left">
+      <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 text-left">
         <div>
           <span className="inline-block px-4 py-1.5 bg-neutral-100 border border-neutral-200 text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-neutral-600 rounded-full mb-4">
             Curated Gatherings & Communities
@@ -598,7 +1241,7 @@ export function CuratedEventsAndFounders() {
             {/* Column 1 */}
             <motion.div style={{ y: yCol1 }} className="flex flex-col gap-8">
               {col1.map((item) => (
-                <PinterestCuratedCard
+                <BespokeCuratedCard
                   key={item.id}
                   item={item}
                   onOpenModal={setModalItem}
@@ -609,7 +1252,7 @@ export function CuratedEventsAndFounders() {
             {/* Column 2 */}
             <motion.div style={{ y: yCol2 }} className="flex flex-col gap-8 pt-8">
               {col2.map((item) => (
-                <PinterestCuratedCard
+                <BespokeCuratedCard
                   key={item.id}
                   item={item}
                   onOpenModal={setModalItem}
@@ -620,7 +1263,7 @@ export function CuratedEventsAndFounders() {
             {/* Column 3 */}
             <motion.div style={{ y: yCol3 }} className="flex flex-col gap-8 pt-16">
               {col3.map((item) => (
-                <PinterestCuratedCard
+                <BespokeCuratedCard
                   key={item.id}
                   item={item}
                   onOpenModal={setModalItem}
@@ -632,7 +1275,7 @@ export function CuratedEventsAndFounders() {
           {/* Mobile Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:hidden">
             {filteredItems.map((item) => (
-              <PinterestCuratedCard
+              <BespokeCuratedCard
                 key={item.id}
                 item={item}
                 onOpenModal={setModalItem}
