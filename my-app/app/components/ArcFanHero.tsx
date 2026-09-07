@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import {
   Sparkles,
   ArrowRight,
@@ -13,6 +13,10 @@ import {
   X,
   CheckCircle2,
   Users,
+  Radio,
+  Zap,
+  Coffee,
+  Check,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 
@@ -21,7 +25,7 @@ interface FanCard {
   name: string;
   role: string;
   tag: string;
-  category: "all" | "cofounders" | "design" | "tech" | "investors";
+  category: "cofounders" | "design" | "tech" | "investors";
   matchScore: number;
   image: string;
   city: string;
@@ -132,12 +136,13 @@ const arcCards: FanCard[] = [
   },
 ];
 
-const categoryFilters = [
-  { label: "All Members", value: "all" },
-  { label: "Co-Founders", value: "cofounders" },
-  { label: "Design Leads", value: "design" },
-  { label: "Tech Leads", value: "tech" },
-  { label: "Investors", value: "investors" },
+// Bespoke Live Intent Calibrators (Out-of-the-Box Component)
+const liveIntents = [
+  { label: "Fintech Co-founder", icon: "🤝", cardIndex: 2, score: 94, subtitle: "Maya Joshi · Ex-Razorpay" },
+  { label: "Pre-seed VC Cheque", icon: "💼", cardIndex: 4, score: 96, subtitle: "Grace R. · First Cheques" },
+  { label: "Founding Tech Lead", icon: "⚡", cardIndex: 1, score: 87, subtitle: "Ankit K. · Core Payments" },
+  { label: "Design Systems Lead", icon: "📐", cardIndex: 3, score: 89, subtitle: "Aarav M. · Freehand Labs" },
+  { label: "3D Creative Director", icon: "🎨", cardIndex: 0, score: 78, subtitle: "Vikram K. · 3D Spatial" },
 ];
 
 interface ArcFanHeroProps {
@@ -147,8 +152,9 @@ interface ArcFanHeroProps {
 
 export function ArcFanHero({ onOpenJoinModal, onExploreEvents }: ArcFanHeroProps) {
   const [activeIndex, setActiveIndex] = useState(2); // Maya Joshi centered initially
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [activeIntent, setActiveIntent] = useState<string>("Fintech Co-founder");
   const [modalCard, setModalCard] = useState<FanCard | null>(null);
+  const [nudgedCards, setNudgedCards] = useState<string[]>([]);
   const total = arcCards.length;
 
   const handlePrev = useCallback(() => {
@@ -159,14 +165,32 @@ export function ArcFanHero({ onOpenJoinModal, onExploreEvents }: ArcFanHeroProps
     setActiveIndex((prev) => (prev === total - 1 ? 0 : prev + 1));
   }, [total]);
 
-  // Jump to category filter
-  const handleFilterClick = (val: string) => {
-    setActiveFilter(val);
-    if (val !== "all") {
-      const targetIdx = arcCards.findIndex((c) => c.category === val);
-      if (targetIdx !== -1) {
-        setActiveIndex(targetIdx);
-      }
+  // Calibrate Room Intent
+  const handleSelectIntent = (intent: typeof liveIntents[0]) => {
+    setActiveIntent(intent.label);
+    setActiveIndex(intent.cardIndex);
+    try {
+      confetti({
+        particleCount: 25,
+        spread: 45,
+        origin: { y: 0.4 },
+        colors: ["#6D28D9", "#FFD45C", "#059669"],
+      });
+    } catch (e) {}
+  };
+
+  const handleQuickNudge = (cardId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!nudgedCards.includes(cardId)) {
+      setNudgedCards([...nudgedCards, cardId]);
+      try {
+        confetti({
+          particleCount: 40,
+          spread: 55,
+          origin: { y: 0.6 },
+          colors: ["#6D28D9", "#FFD45C", "#111827"],
+        });
+      } catch (err) {}
     }
   };
 
@@ -196,16 +220,107 @@ export function ArcFanHero({ onOpenJoinModal, onExploreEvents }: ArcFanHeroProps
   };
 
   return (
-    <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden flex flex-col items-center justify-center bg-[#FAFAFA] text-neutral-900 border-b border-neutral-200/80">
+    <section className="relative pt-24 pb-14 md:pt-32 md:pb-20 overflow-hidden flex flex-col items-center justify-center bg-[#FAFAFA] text-neutral-900 border-b border-neutral-200/80">
+      {/* ========================================================================= */}
+      {/* FLOATING SPATIAL AMBIENT CARDS (Physics & Levitation)                     */}
+      {/* ========================================================================= */}
+
+      {/* Floating Card 1: Top Left - Live Match Telemetry */}
+      <motion.div
+        animate={{
+          y: [0, -12, 0],
+          rotate: [-1, 1, -1],
+        }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        className="hidden xl:flex absolute top-32 left-10 z-20 p-3.5 rounded-2xl bg-white/90 backdrop-blur-xl border border-neutral-200/80 shadow-xl max-w-[230px] text-left pointer-events-auto select-none"
+      >
+        <div className="flex items-start gap-2.5">
+          <div className="w-8 h-8 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 shrink-0 mt-0.5">
+            <Radio className="w-4 h-4 animate-pulse" />
+          </div>
+          <div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[9px] font-mono font-bold uppercase text-emerald-700 bg-emerald-100/80 px-1.5 py-0.5 rounded">
+                Live Match
+              </span>
+              <span className="text-[10px] font-mono font-bold text-[#6D28D9]">94%</span>
+            </div>
+            <p className="text-xs font-bold text-neutral-900 mt-1 leading-tight">
+              Maya Joshi ↔ Aarav M.
+            </p>
+            <p className="text-[10px] text-neutral-500 font-mono mt-0.5">
+              Fintech MVP · Patio Coffee
+            </p>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Floating Card 2: Top Right - Geo-fence Radar Telemetry */}
+      <motion.div
+        animate={{
+          y: [0, 14, 0],
+          rotate: [1, -1, 1],
+        }}
+        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+        className="hidden xl:flex absolute top-28 right-10 z-20 p-3.5 rounded-2xl bg-white/90 backdrop-blur-xl border border-neutral-200/80 shadow-xl max-w-[240px] text-left pointer-events-auto select-none"
+      >
+        <div className="flex items-start gap-2.5">
+          <div className="w-8 h-8 rounded-full bg-violet-50 border border-violet-200 flex items-center justify-center text-[#6D28D9] shrink-0 mt-0.5">
+            <ShieldCheck className="w-4 h-4" />
+          </div>
+          <div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[9px] font-mono font-bold uppercase text-violet-700 bg-violet-100/80 px-1.5 py-0.5 rounded">
+                NCPA Mumbai
+              </span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            </div>
+            <p className="text-xs font-bold text-neutral-900 mt-1 leading-tight">
+              42 Verified Inside
+            </p>
+            <p className="text-[10px] text-neutral-500 font-mono mt-0.5">
+              Geo-fence: 50m radius active
+            </p>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Floating Card 3: Mid Left - Recent Double Opt-In */}
+      <motion.div
+        animate={{
+          y: [0, -10, 0],
+          rotate: [2, -1, 2],
+        }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        className="hidden 2xl:flex absolute bottom-36 left-12 z-20 p-3 rounded-2xl bg-white/90 backdrop-blur-xl border border-neutral-200/80 shadow-xl max-w-[210px] text-left pointer-events-auto select-none"
+      >
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-xl bg-amber-100 text-amber-900 flex items-center justify-center text-xs font-bold shrink-0">
+            ☕
+          </div>
+          <div>
+            <span className="text-[9px] font-mono font-bold text-neutral-500 uppercase block">
+              Double Opt-In Live
+            </span>
+            <p className="text-xs font-bold text-neutral-900 leading-tight">
+              &ldquo;Patio coffee in 5?&rdquo;
+            </p>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* ========================================================================= */}
+      {/* MAIN HERO CONTENT                                                         */}
+      {/* ========================================================================= */}
       <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center relative z-10">
         {/* Eyebrow badge in clean Apple editorial style */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white border border-neutral-200 text-xs font-mono font-bold uppercase tracking-wider text-neutral-700 rounded-full shadow-xs mb-6">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white border border-neutral-200 text-xs font-mono font-bold uppercase tracking-wider text-neutral-700 rounded-full shadow-xs mb-6">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span>42 Verified Members Live · The Loft & NCPA Mumbai</span>
+          <span>Intentional Live Networking · Find Your Kind</span>
         </div>
 
         {/* Editorial Headline */}
-        <h1 className="text-[11vw] sm:text-[9vw] md:text-[5.5vw] font-black tracking-[-0.05em] leading-[0.88] text-neutral-950 mb-6 max-w-5xl">
+        <h1 className="text-[11vw] sm:text-[9vw] md:text-[5.5vw] font-black tracking-[-0.05em] leading-[0.88] text-neutral-950 mb-5 max-w-5xl">
           People are<br />
           <span className="text-neutral-300">Possibilities.</span>
         </h1>
@@ -215,28 +330,10 @@ export function ArcFanHero({ onOpenJoinModal, onExploreEvents }: ArcFanHeroProps
           Built on the philosophy of curation over abundance. Kinjo transforms accidental encounters into intentional connections.
         </p>
 
-        {/* Interactive Filter Pills */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
-          {categoryFilters.map((f) => {
-            const isActive = activeFilter === f.value;
-            return (
-              <button
-                key={f.value}
-                type="button"
-                onClick={() => handleFilterClick(f.value)}
-                className={`px-3.5 py-1 rounded-full text-xs font-mono font-bold transition-all cursor-pointer border ${
-                  isActive
-                    ? "bg-neutral-950 text-white border-neutral-950 shadow-xs scale-105"
-                    : "bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400 hover:text-neutral-950"
-                }`}
-              >
-                {f.label}
-              </button>
-            );
-          })}
-        </div>
+        {/* BESPOKE INNOVATION: THE LIVE INTENT CALIBRATOR */}
+       
 
-        {/* 3D PERSPECTIVE ARCH CONVEYOR */}
+        {/* 3D PERSPECTIVE ARCH CONVEYOR WITH DRAG PHYSICS */}
         <div className="relative w-full max-w-[1300px] select-none my-2">
           <div className="relative w-full h-[380px] sm:h-[430px] md:h-[470px] flex items-center justify-center">
             <div className="relative w-full h-full flex items-center justify-center perspective-[1200px]">
@@ -256,6 +353,7 @@ export function ArcFanHero({ onOpenJoinModal, onExploreEvents }: ArcFanHeroProps
                 const scale = isCenter ? 1.02 : Math.max(0.78, 1 - Math.abs(diff) * 0.1);
                 const opacity = isCenter ? 1 : Math.max(0.45, 1 - Math.abs(diff) * 0.22);
                 const zIndex = 30 - Math.abs(diff) * 5;
+                const isNudged = nudgedCards.includes(card.id);
 
                 return (
                   <motion.div
@@ -297,7 +395,7 @@ export function ArcFanHero({ onOpenJoinModal, onExploreEvents }: ArcFanHeroProps
                         card.color
                       } w-[230px] sm:w-[270px] md:w-[310px] h-[310px] sm:h-[340px] md:h-[370px] rounded-[2rem] p-5 md:p-6 border flex flex-col justify-between transition-all duration-300 ${
                         isCenter
-                          ? "shadow-xl ring-4 ring-neutral-950/10 scale-[1.01]"
+                          ? "shadow-2xl ring-4 ring-neutral-950/10 scale-[1.01]"
                           : "shadow-sm hover:shadow-md"
                       }`}
                     >
@@ -343,9 +441,9 @@ export function ArcFanHero({ onOpenJoinModal, onExploreEvents }: ArcFanHeroProps
                         </p>
                       </div>
 
-                      {/* Bottom: Skill Chips & Action */}
+                      {/* Bottom: Skill Chips & Tactile Nudge Button */}
                       <div className="border-t border-neutral-200/80 pt-3 flex items-center justify-between">
-                        <div className="flex flex-wrap gap-1 max-w-[160px]">
+                        <div className="flex flex-wrap gap-1 max-w-[150px]">
                           {card.skills.slice(0, 2).map((s) => (
                             <span
                               key={s}
@@ -359,14 +457,24 @@ export function ArcFanHero({ onOpenJoinModal, onExploreEvents }: ArcFanHeroProps
                         {isCenter ? (
                           <button
                             type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setModalCard(card);
-                            }}
-                            className="px-3.5 py-1.5 rounded-full bg-neutral-950 text-white font-bold text-[11px] hover:bg-neutral-800 transition-colors shadow-sm flex items-center gap-1 cursor-pointer"
+                            onClick={(e) => handleQuickNudge(card.id, e)}
+                            className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1 cursor-pointer shadow-sm ${
+                              isNudged
+                                ? "bg-emerald-600 text-white"
+                                : "bg-neutral-950 text-white hover:bg-neutral-800"
+                            }`}
                           >
-                            <span>Connect</span>
-                            <ArrowRight className="w-3 h-3" />
+                            {isNudged ? (
+                              <>
+                                <Check className="w-3 h-3 text-[#FFD45C]" />
+                                <span>Nudged!</span>
+                              </>
+                            ) : (
+                              <>
+                                <span>Nudge</span>
+                                <ArrowRight className="w-3 h-3 text-[#FFD45C]" />
+                              </>
+                            )}
                           </button>
                         ) : (
                           <span className="text-[10px] font-mono text-neutral-400 bg-white/60 px-2 py-0.5 rounded-full border border-neutral-200">
@@ -380,7 +488,7 @@ export function ArcFanHero({ onOpenJoinModal, onExploreEvents }: ArcFanHeroProps
               })}
             </div>
 
-            {/* SIDE FLOATING BUTTONS: HIGHEST Z-INDEX & POINTER-EVENTS TO ENSURE 100% CLICKABILITY */}
+            {/* SIDE FLOATING BUTTONS */}
             <button
               type="button"
               onClick={(e) => {
@@ -409,7 +517,7 @@ export function ArcFanHero({ onOpenJoinModal, onExploreEvents }: ArcFanHeroProps
           </div>
 
           {/* DEDICATED CONTROLLER BAR WITH LEFT/RIGHT & AVATAR JUMP DOTS */}
-          <div className="flex items-center justify-center gap-3 mt-4 mb-8 z-[60] relative pointer-events-auto">
+          <div className="flex items-center justify-center gap-3 mt-4 mb-6 z-[60] relative pointer-events-auto">
             <button
               type="button"
               onClick={(e) => {
@@ -457,7 +565,7 @@ export function ArcFanHero({ onOpenJoinModal, onExploreEvents }: ArcFanHeroProps
         </div>
 
         {/* Primary Call to Actions */}
-        <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mb-10">
           <button
             type="button"
             onClick={() => onOpenJoinModal("attendee")}
@@ -475,6 +583,41 @@ export function ArcFanHero({ onOpenJoinModal, onExploreEvents }: ArcFanHeroProps
             <span>How an Evening Unfolds</span>
             <ArrowRight className="w-3.5 h-3.5 text-neutral-400" />
           </button>
+        </div>
+
+        {/* ========================================================================= */}
+        {/* LIVE EDITORIAL ACTIVITY MARQUEE TICKER (Apple/Linear-Grade)                */}
+        {/* ========================================================================= */}
+        <div className="w-full overflow-hidden border-t border-neutral-200/80 pt-4 pb-1">
+          <div className="flex items-center gap-8 animate-marquee whitespace-nowrap text-xs font-mono text-neutral-500">
+            <span className="flex items-center gap-1.5 text-neutral-900 font-semibold">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              NCPA SOUTH MUMBAI: 42 VERIFIED IN THE ROOM
+            </span>
+            <span>•</span>
+            <span className="flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-[#6D28D9]" />
+              94% STRATEGIC COMPATIBILITY: MAYA JOSHI & FINTECH OPERATORS
+            </span>
+            <span>•</span>
+            <span className="flex items-center gap-1.5 text-neutral-900 font-semibold">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+              DOUBLE OPT-IN: ZERO UNSOLICITED SALES PITCHES
+            </span>
+            <span>•</span>
+            <span className="flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-[#FFD45C]" />
+              KORAMANGALA ROOFTOP: 52 TECH LEADS CHECKING IN AT SUNSET
+            </span>
+            <span>•</span>
+            <span className="flex items-center gap-1.5 text-neutral-900 font-semibold">
+              💼 FIRST CHEQUES SYNDICATE: ₹50L–₹2CR PRE-SEED ROUNDS OPEN
+            </span>
+            <span>•</span>
+            <span className="flex items-center gap-1.5">
+              ☕ DOUBLE OPT-IN ACCEPTED: PRIVATE CHANNELS LIVE
+            </span>
+          </div>
         </div>
       </div>
 
