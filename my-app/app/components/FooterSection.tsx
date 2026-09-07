@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { KinjoLogo } from "./KinjoLogo";
 import { Apple, Smartphone } from "lucide-react";
 
@@ -11,22 +12,48 @@ interface FooterSectionProps {
 export function FooterSection({ onOpenJoinModal }: FooterSectionProps) {
   return (
     <footer className="relative bg-white text-neutral-900 border-t border-neutral-200 pt-20 pb-16 overflow-hidden">
+      {/* Background Grand Architectural Watermark */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden select-none z-0">
+        <div className="relative w-[800px] sm:w-[1100px] md:w-[1400px] h-[400px] opacity-[0.025] grayscale contrast-200">
+          <Image
+            src="/kinjo.svg"
+            alt="Kinjo Brand"
+            fill
+            className="object-contain"
+          />
+        </div>
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Download CTA Box (Light Theme) */}
-        <div className="rounded-[2.5rem] p-8 sm:p-14 bg-[#FAF5FF] border border-[#6D28D9]/20 mb-16 text-center relative overflow-hidden shadow-xs">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-[#6D28D9]/20 text-xs font-mono text-[#6D28D9] mb-5 shadow-xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#6D28D9]" />
-            <span className="uppercase tracking-wider font-semibold">FIND YOUR KIND · IOS & ANDROID</span>
+        {/* Download CTA Box (Calm, Non-Poppy Editorial Light Theme) */}
+        <div className="rounded-[2.5rem] p-8 sm:p-14 bg-[#F8FAFC] border border-neutral-200/90 mb-16 text-center relative overflow-hidden shadow-xs">
+          {/* Subtle Watermark Inside CTA Box */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden select-none z-0">
+            <div className="relative w-[500px] sm:w-[700px] h-[220px] opacity-[0.04] grayscale contrast-200">
+              <Image
+                src="/kinjo.svg"
+                alt=""
+                fill
+                className="object-contain"
+              />
+            </div>
           </div>
 
-          <h2 className="text-3xl sm:text-5xl font-black tracking-[-0.04em] text-neutral-950 mb-3">
-            Someone who can help is already <br className="hidden sm:inline" />
-            <span className="text-neutral-400">attending a room this week.</span>
-          </h2>
+          <div className="relative z-10">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-neutral-200 text-xs font-mono text-neutral-700 mb-5 shadow-xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <span className="uppercase tracking-wider font-semibold">FIND YOUR KIND · IOS & ANDROID</span>
+            </div>
 
-          <p className="text-sm sm:text-base text-neutral-600 max-w-xl mx-auto mb-8 leading-relaxed font-medium">
-            Set your strategic goals, and connect directly with the founders, investors, and leaders who can accelerate them.
-          </p>
+            <h2 className="text-3xl sm:text-5xl font-black tracking-[-0.04em] text-neutral-950 mb-3">
+              Someone who can help is already <br className="hidden sm:inline" />
+              <span className="text-neutral-400">attending a room this week.</span>
+            </h2>
+
+            <p className="text-sm sm:text-base text-neutral-600 max-w-xl mx-auto mb-8 leading-relaxed font-medium">
+              Set your strategic goals, and connect directly with the founders, investors, and leaders who can accelerate them.
+            </p>
+          </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
             <button
