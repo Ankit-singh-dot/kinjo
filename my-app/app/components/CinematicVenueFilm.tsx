@@ -1,19 +1,13 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import Image from "next/image";
+import { motion, useScroll, useTransform, useMotionValueEvent, AnimatePresence } from "framer-motion";
 import {
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
   MapPin,
-  Users,
-  ShieldCheck,
   ArrowRight,
   Plus,
-  Check,
-  Sparkles,
+  Radio,
 } from "lucide-react";
 
 interface VenueVideo {
@@ -99,120 +93,122 @@ interface CinematicVenueFilmProps {
 
 export function CinematicVenueFilm({ onOpenJoinModal }: CinematicVenueFilmProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [selectedIdx, setSelectedIdx] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(true);
-  const [videoProgress, setVideoProgress] = useState(0);
 
-  // APPLE-STYLE SCROLL ZOOM OUT ANIMATION:
-  // As the user scrolls down and the section travels up the viewport ("when it goes up"),
-  // the video zooms out smoothly from full-bleed scale (1.05) to a focused cinema frame (0.88),
-  // and the border-radius expands into a sleek rounded container.
+  // SCROLL-DRIVEN 4-IMAGE ZOOM IN:
+  // As the user scrolls down through the runway, scrollYProgress progresses from 0 to 1.
+  // The active venue image switches smoothly at [0-0.25, 0.25-0.5, 0.5-0.75, 0.75-1.0].
+  // Simultaneously, the image zooms in smoothly from 1.0 to 1.22 as it travels up the viewport.
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end start"],
+    offset: ["start start", "end end"],
   });
 
-  const videoScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.02, 0.94, 0.88]);
-  const videoRadius = useTransform(scrollYProgress, [0, 0.4, 1], ["0px", "28px", "48px"]);
-  const videoY = useTransform(scrollYProgress, [0, 1], ["0%", "-4%"]);
+  // Camera push-in / zoom-in as user scrolls down and section travels up
+  const imageZoom = useTransform(scrollYProgress, [0, 1], [1.0, 1.22]);
+  const containerRadius = useTransform(scrollYProgress, [0, 0.08, 0.92, 1], ["0px", "0px", "0px", "0px"]);
+
+  // Dynamically update active venue as user scrolls
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    let newIdx = 0;
+    if (latest >= 0.75) newIdx = 3;
+    else if (latest >= 0.50) newIdx = 2;
+    else if (latest >= 0.25) newIdx = 1;
+    else newIdx = 0;
+
+    if (newIdx !== selectedIdx) {
+      setSelectedIdx(newIdx);
+    }
+  });
 
   const activeVenue = venueVideos[selectedIdx];
 
-  const togglePlay = () => {
-    if (!videoRef.current) return;
-    if (isPlaying) {
-      videoRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      videoRef.current.play();
-      setIsPlaying(true);
-    }
-  };
-
-  const toggleMute = () => {
-    if (!videoRef.current) return;
-    videoRef.current.muted = !isMuted;
-    setIsMuted(!isMuted);
-  };
-
-  const handleTimeUpdate = () => {
-    if (!videoRef.current) return;
-    const progress =
-      (videoRef.current.currentTime / (videoRef.current.duration || 1)) * 100;
-    setVideoProgress(progress);
-  };
-
+  // Smooth click-to-jump to specific venue stage
   const handleSelectVenue = (idx: number) => {
     setSelectedIdx(idx);
-    setIsPlaying(true);
-    if (videoRef.current) {
-      videoRef.current.currentTime = 0;
-      videoRef.current.play().catch(() => {});
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const totalScrollable = containerRef.current.offsetHeight - window.innerHeight;
+      if (totalScrollable > 0) {
+        const targetOffset = scrollTop + rect.top + (idx * 0.25 + 0.03) * totalScrollable;
+        window.scrollTo({ top: targetOffset, behavior: "smooth" });
+      }
     }
   };
 
   return (
     <section
       ref={containerRef}
-      className="relative min-h-[170vh] bg-black text-white selection:bg-[#6D28D9] selection:text-white"
+      className="relative min-h-[350vh] bg-black text-white selection:bg-[#6D28D9] selection:text-white"
     >
       {/* STICKY FULL SCREEN VIEWPORT CONTAINER */}
       <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden bg-black">
-        {/* ZOOM-OUT MOTION CANVAS (Smoothly zooms out when going up) */}
+        {/* ZOOM-IN MOTION CANVAS (Smoothly zooms in as user scrolls down & travels up) */}
         <motion.div
           style={{
-            scale: videoScale,
-            borderRadius: videoRadius,
-            y: videoY,
+            borderRadius: containerRadius,
           }}
-          transition={{ ease: "easeOut", duration: 0.2 }}
-          className="relative w-full h-full overflow-hidden shadow-[0_20px_80px_rgba(0,0,0,0.8)] border border-white/10 flex items-center justify-center will-change-transform"
+          className="relative w-full h-full overflow-hidden flex items-center justify-center will-change-transform"
         >
-          {/* THE FULL SCREEN HTML5 CINEMA VIDEO */}
-          <video
-            ref={videoRef}
-            key={activeVenue.videoUrl}
-            src={activeVenue.videoUrl}
-            poster={activeVenue.posterImage}
-            autoPlay
-            loop
-            muted={isMuted}
-            playsInline
-            onTimeUpdate={handleTimeUpdate}
-            className="absolute inset-0 w-full h-full object-cover object-center"
-          />
+          {/* THE 4 HIGH-RESOLUTION VENUE IMAGES WITH CONTINUOUS SCROLL ZOOM */}
+          <motion.div
+            style={{ scale: imageZoom }}
+            className="absolute inset-0 w-full h-full will-change-transform"
+          >
+            {venueVideos.map((venue, idx) => {
+              const isActive = selectedIdx === idx;
+              return (
+                <motion.div
+                  key={venue.id}
+                  initial={false}
+                  animate={{
+                    opacity: isActive ? 1 : 0,
+                  }}
+                  transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                  className="absolute inset-0 w-full h-full pointer-events-none"
+                >
+                  <Image
+                    src={venue.posterImage}
+                    alt={venue.name}
+                    fill
+                    priority={idx === 0}
+                    sizes="100vw"
+                    quality={90}
+                    className="object-cover object-center"
+                  />
+                </motion.div>
+              );
+            })}
+          </motion.div>
 
           {/* Cinema Dark Gradient Vignette Overlay for Text Legibility */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-black/75 pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/60 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-black/75 pointer-events-none z-10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/60 pointer-events-none z-10" />
 
-          {/* TOP BAR: Apple Header & Live Geo-fence Indicator */}
+          {/* TOP BAR: Apple Header & Live Geo-fence Indicator (Zero AI Dots) */}
           <div className="absolute top-6 sm:top-10 left-6 sm:left-12 right-6 sm:right-12 flex items-center justify-between z-30 pointer-events-none">
             <div className="flex items-center gap-3">
               <span className="text-xs font-mono font-bold tracking-[0.2em] text-white/70 uppercase">
                 KINJO CINEMA · THE ROOM
               </span>
-              <span className="hidden sm:inline-block w-1.5 h-1.5 rounded-full bg-white/30" />
-              
+              <span className="text-white/30 font-mono text-xs hidden sm:inline">|</span>
+              <span className="text-xs font-mono text-[#FFD45C] hidden sm:inline">
+                STAGE 0{selectedIdx + 1} OF 04
+              </span>
             </div>
 
-            {/* Live Audio Equalizer & Geo-fence */}
-            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-xl border border-white/20 text-xs font-mono text-white shadow-xl">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>50M GEO-FENCE ACTIVE</span>
-              <span className="text-white/30">•</span>
-              <div className="flex items-end gap-[2.5px] h-3">
-                <span className="w-[2.5px] h-1.5 bg-emerald-400 rounded-full animate-bounce [animation-delay:0.1s]" />
-                <span className="w-[2.5px] h-3 bg-emerald-400 rounded-full animate-bounce [animation-delay:0.3s]" />
-                <span className="w-[2.5px] h-2 bg-emerald-400 rounded-full animate-bounce [animation-delay:0.2s]" />
-              </div>
+            {/* Live Geo-fence Status Indicator (Clean Lucide Icon, Zero AI Dot Balls) */}
+            <div className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-xl border border-white/20 text-xs font-mono text-white shadow-xl">
+              <Radio className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="tracking-wide">50M GEO-FENCE ACTIVE</span>
+              <span className="text-white/30 font-mono">·</span>
+              <span className="text-white/70 font-mono text-[11px]">{activeVenue.city}</span>
             </div>
           </div>
 
           {/* MAIN APPLE-STYLE INTERACTION ROW:
-              Headline + Left-hand vertical pill buttons (matching user screenshot) */}
+              Headline + Left-hand vertical pill buttons (Synchronized to scroll) */}
           <div className="absolute inset-0 z-20 flex flex-col justify-center px-6 sm:px-12 md:px-16 pointer-events-none">
             <div className="max-w-4xl text-left space-y-6">
               {/* Apple "Take a closer look." Headline */}
@@ -221,11 +217,11 @@ export function CinematicVenueFilm({ onOpenJoinModal }: CinematicVenueFilmProps)
                   Take a closer look.
                 </h2>
                 <p className="text-sm sm:text-base text-zinc-300 font-medium mt-3 max-w-lg leading-relaxed">
-                  Real physical spaces. High-signal rooms. No cold approaches, no awkward corners.
+                  Real physical spaces. High-signal rooms. Scroll to explore all four flagship chapters.
                 </p>
               </div>
 
-              {/* VERTICAL APPLE PILL BUTTONS (EXACTLY MATCHING USER'S SCREENSHOT) */}
+              {/* VERTICAL APPLE PILL BUTTONS (SCROLL SYNCHRONIZED + CLICKABLE) */}
               <div className="flex flex-col items-start gap-2.5 pt-2 pointer-events-auto">
                 {venueVideos.map((venue, idx) => {
                   const isSelected = selectedIdx === idx;
@@ -234,13 +230,13 @@ export function CinematicVenueFilm({ onOpenJoinModal }: CinematicVenueFilmProps)
                       key={venue.id}
                       type="button"
                       onClick={() => handleSelectVenue(idx)}
-                      className={`group flex items-center gap-2.5 px-4 py-2 rounded-full transition-all duration-300 cursor-pointer border ${
+                      className={`group flex items-center gap-2.5 px-4 py-2.5 rounded-full transition-all duration-300 cursor-pointer border ${
                         isSelected
-                          ? "bg-white text-black border-white shadow-xl scale-105 font-bold"
+                          ? "bg-white text-black border-white shadow-2xl scale-105 font-bold"
                           : "bg-white/10 hover:bg-white/20 text-white/90 border-white/15 backdrop-blur-xl hover:border-white/30 font-medium"
                       }`}
                     >
-                      {/* Plus icon inside small circle (Matching Apple UI in screenshot) */}
+                      {/* Plus / Active icon */}
                       <span
                         className={`w-4 h-4 rounded-full flex items-center justify-center transition-transform duration-300 ${
                           isSelected
@@ -268,52 +264,35 @@ export function CinematicVenueFilm({ onOpenJoinModal }: CinematicVenueFilmProps)
             </div>
           </div>
 
-          {/* BOTTOM BAR: ACTIVE ROOM DETAILS & PLAY/PAUSE CONTROLS */}
+          {/* BOTTOM BAR: ACTIVE ROOM DETAILS & ACTIONS */}
           <div className="absolute bottom-6 sm:bottom-10 left-6 sm:left-12 right-6 sm:right-12 z-30 flex flex-col sm:flex-row sm:items-end justify-between gap-4 text-left pointer-events-none">
-            {/* Active Venue Details */}
-            <div className="max-w-xl text-white space-y-1 drop-shadow-md">
-              <div className="flex items-center gap-2 text-xs font-mono text-[#FFD45C] font-semibold">
-                <MapPin className="w-3.5 h-3.5 text-[#FFD45C]" />
-                <span>{activeVenue.city}</span>
-                <span>•</span>
-                <span>{activeVenue.roomType}</span>
-              </div>
-              <p className="text-xs sm:text-sm text-zinc-300 font-medium leading-relaxed max-w-md line-clamp-2">
-                {activeVenue.description}
-              </p>
-            </div>
+            {/* Active Venue Details with Smooth Spring Fade */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeVenue.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+                className="max-w-xl text-white space-y-1.5 drop-shadow-md"
+              >
+                <div className="flex items-center gap-2 text-xs font-mono text-[#FFD45C] font-semibold">
+                  <MapPin className="w-3.5 h-3.5 text-[#FFD45C]" />
+                  <span>{activeVenue.city}</span>
+                  <span className="text-white/30">·</span>
+                  <span>{activeVenue.roomType}</span>
+                </div>
+                <p className="text-xs sm:text-sm text-zinc-300 font-medium leading-relaxed max-w-md">
+                  {activeVenue.description}
+                </p>
+                <div className="text-[11px] font-mono text-white/60 tracking-wider">
+                  {activeVenue.stats}
+                </div>
+              </motion.div>
+            </AnimatePresence>
 
-            {/* Apple-style Action & Audio Dock */}
+            {/* Apple-style Action Dock */}
             <div className="flex items-center gap-3 pointer-events-auto shrink-0">
-              {/* Play/Pause Button */}
-              <button
-                type="button"
-                onClick={togglePlay}
-                aria-label={isPlaying ? "Pause Video" : "Play Video"}
-                className="w-11 h-11 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-xl border border-white/30 text-white flex items-center justify-center transition-all cursor-pointer shadow-lg hover:scale-110 active:scale-95"
-              >
-                {isPlaying ? (
-                  <Pause className="w-4 h-4 fill-white" />
-                ) : (
-                  <Play className="w-4 h-4 fill-white ml-0.5" />
-                )}
-              </button>
-
-              {/* Mute/Unmute Button */}
-              <button
-                type="button"
-                onClick={toggleMute}
-                aria-label={isMuted ? "Unmute Sound" : "Mute Sound"}
-                className="w-11 h-11 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-xl border border-white/30 text-white flex items-center justify-center transition-all cursor-pointer shadow-lg hover:scale-110 active:scale-95"
-              >
-                {isMuted ? (
-                  <VolumeX className="w-4 h-4" />
-                ) : (
-                  <Volume2 className="w-4 h-4 text-emerald-400" />
-                )}
-              </button>
-
-              {/* Request Key Button */}
               <button
                 type="button"
                 onClick={() => onOpenJoinModal("attendee")}
@@ -325,12 +304,18 @@ export function CinematicVenueFilm({ onOpenJoinModal }: CinematicVenueFilmProps)
             </div>
           </div>
 
-          {/* Minimal Scrubber Line at the very bottom */}
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/15 z-40">
-            <div
-              className="h-full bg-gradient-to-r from-[#6D28D9] via-emerald-400 to-[#FFD45C] transition-all duration-200"
-              style={{ width: `${videoProgress}%` }}
-            />
+          {/* Minimal Vertical Scroll Progress Strip on Right Edge */}
+          <div className="absolute right-6 top-1/2 -translate-y-1/2 hidden md:flex flex-col items-center gap-2 z-30 pointer-events-none">
+            {venueVideos.map((_, i) => (
+              <div
+                key={i}
+                className={`w-1 transition-all duration-300 rounded-full ${
+                  selectedIdx === i
+                    ? "h-8 bg-white"
+                    : "h-2 bg-white/25"
+                }`}
+              />
+            ))}
           </div>
         </motion.div>
       </div>
