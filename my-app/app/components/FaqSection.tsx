@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { Plus, Minus, HelpCircle } from "lucide-react";
 
 interface FaqItem {
@@ -57,7 +58,19 @@ export function FaqSection() {
 
   return (
     <section id="faqs" className="relative py-20 md:py-24 bg-[#FAFAFA] text-neutral-900 overflow-hidden border-t border-neutral-200">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Architectural Brand Watermark */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden select-none z-0">
+        <div className="relative w-[600px] sm:w-[850px] md:w-[1000px] h-[320px] opacity-[0.03] grayscale contrast-200">
+          <Image
+            src="/kinjo.svg"
+            alt="Kinjo Brand Mark"
+            fill
+            className="object-contain"
+          />
+        </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
         <div className="text-center mb-14">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-neutral-200 text-xs font-mono font-semibold text-neutral-700 mb-3 shadow-xs">
