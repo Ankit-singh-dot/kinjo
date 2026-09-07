@@ -144,6 +144,18 @@ export function InteractiveEventJourney() {
       ref={containerRef}
       className="relative py-16 md:py-24 bg-[#FAFAFA] text-neutral-900 border-t border-neutral-200 overflow-hidden"
     >
+      {/* Architectural Brand Watermark */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden select-none z-0">
+        <div className="relative w-[600px] sm:w-[850px] md:w-[1100px] h-[340px] opacity-[0.035] grayscale contrast-200">
+          <Image
+            src="/kinjo.svg"
+            alt="Kinjo Watermark"
+            fill
+            className="object-contain"
+          />
+        </div>
+      </div>
+
       <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* TOP: Section Header & Step Switcher */}
         <div className="w-full flex flex-col items-center shrink-0 mb-8 text-center">
