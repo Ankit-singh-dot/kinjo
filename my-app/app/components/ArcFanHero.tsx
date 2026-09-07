@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Sparkles,
   ArrowRight,
@@ -11,11 +11,6 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
-  CheckCircle2,
-  Users,
-  Radio,
-  Zap,
-  Coffee,
   Check,
 } from "lucide-react";
 import confetti from "canvas-confetti";
@@ -48,7 +43,8 @@ const arcCards: FanCard[] = [
     image: "/images/people_vikram_kher.jpg",
     city: "Bengaluru",
     highlight: "Available for product launch 3D creative direction & brand films",
-    details: "Built visual systems for top global consumer tech brands. Deep expertise in 3D direction and interactive launch experiences.",
+    details:
+      "Built visual systems for top global consumer tech brands. Deep expertise in 3D direction and interactive launch experiences.",
     intent: "Creative collaboration with funded tech teams",
     skills: ["3D Creative", "Motion Systems", "Brand Positioning"],
     color: "bg-[#FAF5FF] border-[#6D28D9]/20",
@@ -64,7 +60,8 @@ const arcCards: FanCard[] = [
     image: "/images/event_ai_builders.jpg",
     city: "Bengaluru",
     highlight: "Ex-Razorpay engineer building ultra-fast transaction pipelines",
-    details: "Architected real-time settlement rails processing 10M+ daily transactions. Looking to join an early-stage fintech team as Founding Tech Lead / CTO.",
+    details:
+      "Architected real-time settlement rails processing 10M+ daily transactions. Looking to join an early-stage fintech team as Founding Tech Lead / CTO.",
     intent: "Fintech Co-founder / Founding Engineer role",
     skills: ["Go / Rust", "UPI Settlement", "Distributed Rails"],
     color: "bg-[#F0FDF4] border-emerald-200",
@@ -80,7 +77,8 @@ const arcCards: FanCard[] = [
     image: "/images/people_maya_joshi.jpg",
     city: "Mumbai",
     highlight: "Looking for a founder to build consumer fintech & checkout rails",
-    details: "Shipped consumer payment checkouts used by 30M+ users. Specializes in frictionless verification, typography, and viral onboarding mechanics.",
+    details:
+      "Shipped consumer payment checkouts used by 30M+ users. Specializes in frictionless verification, typography, and viral onboarding mechanics.",
     intent: "Pre-seed Fintech Co-founder & Equity Partner",
     skills: ["Design Systems", "Figma", "Fintech UX", "Pre-seed MVP"],
     color: "bg-[#FFFDF5] border-amber-300",
@@ -96,7 +94,8 @@ const arcCards: FanCard[] = [
     image: "/images/people_aarav_mehta.jpg",
     city: "Mumbai",
     highlight: "Shipped enterprise design systems deployed across 40+ engineering squads",
-    details: "Specialist in zero-to-one design architecture, token pipelines, and accessibility. Mentor at Bombay Design Week.",
+    details:
+      "Specialist in zero-to-one design architecture, token pipelines, and accessibility. Mentor at Bombay Design Week.",
     intent: "Advising seed-stage tech teams & design leadership",
     skills: ["Design Tokens", "React Component UI", "Enterprise UX"],
     color: "bg-[#F8FAFC] border-slate-200",
@@ -112,7 +111,8 @@ const arcCards: FanCard[] = [
     image: "/images/people_grace_r.jpg",
     city: "Mumbai & London",
     highlight: "30+ pre-seed deals, writing ₹50L–₹2Cr lead cheques for Indian B2B tech",
-    details: "Hands-on operator turned investor. Leads First Cheques syndicate backing repeat operators in fintech, logistics, and developer tooling.",
+    details:
+      "Hands-on operator turned investor. Leads First Cheques syndicate backing repeat operators in fintech, logistics, and developer tooling.",
     intent: "Active deployment in early-stage founder rounds",
     skills: ["Pre-seed Deals", "Syndicate Lead", "Go-To-Market"],
     color: "bg-[#FFFBEB] border-amber-200",
@@ -128,21 +128,13 @@ const arcCards: FanCard[] = [
     image: "/images/people_priya_rao.jpg",
     city: "Bengaluru",
     highlight: "Crafting distinct voice & category positioning for high-growth startups",
-    details: "Helped 4 startups launch their global rebrands. Expert in narrative-driven launch films, typography standards, and press strategy.",
+    details:
+      "Helped 4 startups launch their global rebrands. Expert in narrative-driven launch films, typography standards, and press strategy.",
     intent: "Strategic narrative design & brand advisory",
     skills: ["Narrative Design", "Brand Architecture", "Media PR"],
     color: "bg-[#FFF7ED] border-orange-200",
     badgeBg: "bg-orange-100 text-orange-900",
   },
-];
-
-// Bespoke Live Intent Calibrators (Out-of-the-Box Component)
-const liveIntents = [
-  { label: "Fintech Co-founder", icon: "🤝", cardIndex: 2, score: 94, subtitle: "Maya Joshi · Ex-Razorpay" },
-  { label: "Pre-seed VC Cheque", icon: "💼", cardIndex: 4, score: 96, subtitle: "Grace R. · First Cheques" },
-  { label: "Founding Tech Lead", icon: "⚡", cardIndex: 1, score: 87, subtitle: "Ankit K. · Core Payments" },
-  { label: "Design Systems Lead", icon: "📐", cardIndex: 3, score: 89, subtitle: "Aarav M. · Freehand Labs" },
-  { label: "3D Creative Director", icon: "🎨", cardIndex: 0, score: 78, subtitle: "Vikram K. · 3D Spatial" },
 ];
 
 interface ArcFanHeroProps {
@@ -152,7 +144,6 @@ interface ArcFanHeroProps {
 
 export function ArcFanHero({ onOpenJoinModal, onExploreEvents }: ArcFanHeroProps) {
   const [activeIndex, setActiveIndex] = useState(2); // Maya Joshi centered initially
-  const [activeIntent, setActiveIntent] = useState<string>("Fintech Co-founder");
   const [modalCard, setModalCard] = useState<FanCard | null>(null);
   const [nudgedCards, setNudgedCards] = useState<string[]>([]);
   const total = arcCards.length;
@@ -165,28 +156,14 @@ export function ArcFanHero({ onOpenJoinModal, onExploreEvents }: ArcFanHeroProps
     setActiveIndex((prev) => (prev === total - 1 ? 0 : prev + 1));
   }, [total]);
 
-  // Calibrate Room Intent
-  const handleSelectIntent = (intent: typeof liveIntents[0]) => {
-    setActiveIntent(intent.label);
-    setActiveIndex(intent.cardIndex);
-    try {
-      confetti({
-        particleCount: 25,
-        spread: 45,
-        origin: { y: 0.4 },
-        colors: ["#6D28D9", "#FFD45C", "#059669"],
-      });
-    } catch (e) {}
-  };
-
   const handleQuickNudge = (cardId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!nudgedCards.includes(cardId)) {
-      setNudgedCards([...nudgedCards, cardId]);
+      setNudgedCards((prev) => [...prev, cardId]);
       try {
         confetti({
-          particleCount: 40,
-          spread: 55,
+          particleCount: 35,
+          spread: 50,
           origin: { y: 0.6 },
           colors: ["#6D28D9", "#FFD45C", "#111827"],
         });
@@ -220,122 +197,131 @@ export function ArcFanHero({ onOpenJoinModal, onExploreEvents }: ArcFanHeroProps
   };
 
   return (
-    <section className="relative pt-24 pb-14 md:pt-32 md:pb-20 overflow-hidden flex flex-col items-center justify-center bg-[#FAFAFA] text-neutral-900 border-b border-neutral-200/80">
+    <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden flex flex-col items-center justify-center bg-[#FAFAFA] text-neutral-900 border-b border-neutral-200/80">
       {/* ========================================================================= */}
-      {/* FLOATING SPATIAL AMBIENT CARDS (Physics & Levitation)                     */}
+      {/* 1. ARCHITECTURAL BRAND WATERMARK (Kinjo Logo Backdrop)                   */}
       {/* ========================================================================= */}
-
-      {/* Floating Card 1: Top Left - Live Match Telemetry */}
-      <motion.div
-        animate={{
-          y: [0, -12, 0],
-          rotate: [-1, 1, -1],
-        }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        className="hidden xl:flex absolute top-32 left-10 z-20 p-3.5 rounded-2xl bg-white/90 backdrop-blur-xl border border-neutral-200/80 shadow-xl max-w-[230px] text-left pointer-events-auto select-none"
-      >
-        <div className="flex items-start gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 shrink-0 mt-0.5">
-            <Radio className="w-4 h-4 animate-pulse" />
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-[9px] font-mono font-bold uppercase text-emerald-700 bg-emerald-100/80 px-1.5 py-0.5 rounded">
-                Live Match
-              </span>
-              <span className="text-[10px] font-mono font-bold text-[#6D28D9]">94%</span>
-            </div>
-            <p className="text-xs font-bold text-neutral-900 mt-1 leading-tight">
-              Maya Joshi ↔ Aarav M.
-            </p>
-            <p className="text-[10px] text-neutral-500 font-mono mt-0.5">
-              Fintech MVP · Patio Coffee
-            </p>
-          </div>
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden select-none z-0">
+        <div className="relative w-[700px] sm:w-[950px] md:w-[1200px] h-[360px] opacity-[0.045] grayscale contrast-200">
+          <Image
+            src="/kinjo.svg"
+            alt="Kinjo Brand"
+            fill
+            priority
+            className="object-contain"
+          />
         </div>
-      </motion.div>
-
-      {/* Floating Card 2: Top Right - Geo-fence Radar Telemetry */}
-      <motion.div
-        animate={{
-          y: [0, 14, 0],
-          rotate: [1, -1, 1],
-        }}
-        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-        className="hidden xl:flex absolute top-28 right-10 z-20 p-3.5 rounded-2xl bg-white/90 backdrop-blur-xl border border-neutral-200/80 shadow-xl max-w-[240px] text-left pointer-events-auto select-none"
-      >
-        <div className="flex items-start gap-2.5">
-          <div className="w-8 h-8 rounded-full bg-violet-50 border border-violet-200 flex items-center justify-center text-[#6D28D9] shrink-0 mt-0.5">
-            <ShieldCheck className="w-4 h-4" />
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-[9px] font-mono font-bold uppercase text-violet-700 bg-violet-100/80 px-1.5 py-0.5 rounded">
-                NCPA Mumbai
-              </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            </div>
-            <p className="text-xs font-bold text-neutral-900 mt-1 leading-tight">
-              42 Verified Inside
-            </p>
-            <p className="text-[10px] text-neutral-500 font-mono mt-0.5">
-              Geo-fence: 50m radius active
-            </p>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Floating Card 3: Mid Left - Recent Double Opt-In */}
-      <motion.div
-        animate={{
-          y: [0, -10, 0],
-          rotate: [2, -1, 2],
-        }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        className="hidden 2xl:flex absolute bottom-36 left-12 z-20 p-3 rounded-2xl bg-white/90 backdrop-blur-xl border border-neutral-200/80 shadow-xl max-w-[210px] text-left pointer-events-auto select-none"
-      >
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-xl bg-amber-100 text-amber-900 flex items-center justify-center text-xs font-bold shrink-0">
-            ☕
-          </div>
-          <div>
-            <span className="text-[9px] font-mono font-bold text-neutral-500 uppercase block">
-              Double Opt-In Live
-            </span>
-            <p className="text-xs font-bold text-neutral-900 leading-tight">
-              &ldquo;Patio coffee in 5?&rdquo;
-            </p>
-          </div>
-        </div>
-      </motion.div>
+      </div>
 
       {/* ========================================================================= */}
-      {/* MAIN HERO CONTENT                                                         */}
+      {/* 2. REAL APP SCREEN SILHOUETTES IN BACKGROUND (Subtle, compact dimensions) */}
       {/* ========================================================================= */}
-      <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center relative z-10">
-        {/* Eyebrow badge in clean Apple editorial style */}
+      
+      {/* LEFT FLANK: Real App Screens (Dashboard Map Radar & Kin-jod Chat) */}
+      <div className="hidden lg:block absolute -left-8 xl:left-4 top-28 pointer-events-none select-none z-0">
+        {/* Screen 1: Dashboard / Map Radar (Compact size) */}
+        <div className="relative w-[130px] xl:w-[155px] h-[260px] xl:h-[310px] rounded-[22px] border border-neutral-300/60 shadow-md overflow-hidden [transform:perspective(1200px)_rotateY(14deg)_rotateZ(-5deg)] opacity-[0.14] transition-all duration-500">
+          <Image
+            src="/Dashboard.png"
+            alt="Kinjo Map Radar"
+            fill
+            sizes="155px"
+            className="object-cover object-top"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#FAFAFA]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#FAFAFA] via-transparent to-transparent" />
+        </div>
+
+        {/* Screen 2: Kin-jod Double Opt-in Chat (Stacked slightly lower) */}
+        <div className="relative -mt-24 ml-6 w-[105px] xl:w-[125px] h-[190px] xl:h-[225px] rounded-[18px] border border-neutral-300/60 shadow-sm overflow-hidden [transform:perspective(1200px)_rotateY(10deg)_rotateZ(3deg)] opacity-[0.11] transition-all duration-500">
+          <Image
+            src="/chat.png"
+            alt="Kinjo Chat"
+            fill
+            sizes="125px"
+            className="object-cover object-top"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#FAFAFA]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#FAFAFA] via-transparent to-transparent" />
+        </div>
+      </div>
+
+      {/* RIGHT FLANK: Real App Screens (The Room & Verified Profile Editor) */}
+      <div className="hidden lg:block absolute -right-8 xl:right-4 top-28 pointer-events-none select-none z-0">
+        {/* Screen 3: The Room Live Attendee Screen (Compact size) */}
+        <div className="relative w-[130px] xl:w-[155px] h-[260px] xl:h-[310px] rounded-[22px] border border-neutral-300/60 shadow-md overflow-hidden [transform:perspective(1200px)_rotateY(-14deg)_rotateZ(5deg)] opacity-[0.14] transition-all duration-500">
+          <Image
+            src="/img3.png"
+            alt="The Room"
+            fill
+            sizes="155px"
+            className="object-cover object-top"
+          />
+          <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-[#FAFAFA]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#FAFAFA] via-transparent to-transparent" />
+        </div>
+
+        {/* Screen 4: Verified Profile Editor */}
+        <div className="relative -mt-24 mr-6 w-[105px] xl:w-[125px] h-[190px] xl:h-[225px] rounded-[18px] border border-neutral-300/60 shadow-sm overflow-hidden [transform:perspective(1200px)_rotateY(-10deg)_rotateZ(-3deg)] opacity-[0.11] transition-all duration-500">
+          <Image
+            src="/img1.png"
+            alt="Profile Editor"
+            fill
+            sizes="125px"
+            className="object-cover object-top"
+          />
+          <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-[#FAFAFA]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#FAFAFA] via-transparent to-transparent" />
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* 3. MAIN HERO CONTENT & EDITORIAL TYPOGRAPHY                               */}
+      {/* ========================================================================= */}
+      <div className="w-full max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center relative z-10">
+        {/* Clean Eyebrow Badge */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white border border-neutral-200 text-xs font-mono font-bold uppercase tracking-wider text-neutral-700 rounded-full shadow-xs mb-6">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="w-2 h-2 rounded-full bg-emerald-500" />
           <span>Intentional Live Networking · Find Your Kind</span>
         </div>
 
-        {/* Editorial Headline */}
-        <h1 className="text-[11vw] sm:text-[9vw] md:text-[5.5vw] font-black tracking-[-0.05em] leading-[0.88] text-neutral-950 mb-5 max-w-5xl">
+        {/* Bold Editorial Headline */}
+        <h1 className="text-[11vw] sm:text-[8vw] md:text-[5.5vw] font-black tracking-[-0.05em] leading-[0.92] text-neutral-950 mb-5 max-w-5xl">
           People are<br />
           <span className="text-neutral-300">Possibilities.</span>
         </h1>
 
         {/* Brand Statement Description */}
-        <p className="max-w-xl text-base md:text-lg text-neutral-600 font-medium leading-relaxed mb-6">
+        <p className="max-w-xl text-base md:text-lg text-neutral-600 font-medium leading-relaxed mb-8">
           Built on the philosophy of curation over abundance. Kinjo transforms accidental encounters into intentional connections.
         </p>
 
-        {/* BESPOKE INNOVATION: THE LIVE INTENT CALIBRATOR */}
-       
+        {/* Primary Call to Action Buttons */}
+        <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mb-10 z-20 relative">
+          <button
+            type="button"
+            onClick={() => onOpenJoinModal("attendee")}
+            className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-neutral-950 hover:bg-neutral-800 text-white font-bold text-sm transition-all flex items-center justify-center gap-2.5 shadow-md hover:scale-105 active:scale-95 cursor-pointer"
+          >
+            <span>Get Kinjo Free</span>
+            <ArrowRight className="w-4 h-4 text-[#FFD45C]" />
+          </button>
 
-        {/* 3D PERSPECTIVE ARCH CONVEYOR WITH DRAG PHYSICS */}
-        <div className="relative w-full max-w-[1300px] select-none my-2">
-          <div className="relative w-full h-[380px] sm:h-[430px] md:h-[470px] flex items-center justify-center">
+          <button
+            type="button"
+            onClick={onExploreEvents}
+            className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-white hover:bg-neutral-100 text-neutral-800 font-semibold text-sm border border-neutral-300 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs hover:scale-105 active:scale-95"
+          >
+            <span>How an Evening Unfolds</span>
+            <ArrowRight className="w-3.5 h-3.5 text-neutral-400" />
+          </button>
+        </div>
+
+        {/* ========================================================================= */}
+        {/* 4. 3D FAN ARC CAROUSEL WITH WORKING CONTROLS                              */}
+        {/* ========================================================================= */}
+        <div className="relative w-full max-w-[1250px] select-none my-2">
+          <div className="relative w-full h-[380px] sm:h-[420px] md:h-[460px] flex items-center justify-center">
             <div className="relative w-full h-full flex items-center justify-center perspective-[1200px]">
               {arcCards.map((card, idx) => {
                 let diff = idx - activeIndex;
@@ -346,7 +332,12 @@ export function ArcFanHero({ onOpenJoinModal, onExploreEvents }: ArcFanHeroProps
                 if (!isVisible) return null;
 
                 const isCenter = diff === 0;
-                const xStep = typeof window !== "undefined" && window.innerWidth < 640 ? 160 : typeof window !== "undefined" && window.innerWidth < 1024 ? 220 : 280;
+                const xStep =
+                  typeof window !== "undefined" && window.innerWidth < 640
+                    ? 160
+                    : typeof window !== "undefined" && window.innerWidth < 1024
+                    ? 220
+                    : 280;
                 const xPos = diff * xStep;
                 const yPos = Math.pow(Math.abs(diff), 2) * 22;
                 const rot = diff * 5.5;
@@ -488,7 +479,7 @@ export function ArcFanHero({ onOpenJoinModal, onExploreEvents }: ArcFanHeroProps
               })}
             </div>
 
-            {/* SIDE FLOATING BUTTONS */}
+            {/* SIDE FLOATING BUTTONS (High Z-Index, Instant Click) */}
             <button
               type="button"
               onClick={(e) => {
@@ -516,8 +507,8 @@ export function ArcFanHero({ onOpenJoinModal, onExploreEvents }: ArcFanHeroProps
             </button>
           </div>
 
-          {/* DEDICATED CONTROLLER BAR WITH LEFT/RIGHT & AVATAR JUMP DOTS */}
-          <div className="flex items-center justify-center gap-3 mt-4 mb-6 z-[60] relative pointer-events-auto">
+          {/* DEDICATED CONTROLLER BAR WITH PREV/NEXT & PAGINATION DOTS */}
+          <div className="flex items-center justify-center gap-3 mt-4 mb-2 z-[60] relative pointer-events-auto">
             <button
               type="button"
               onClick={(e) => {
@@ -563,65 +554,9 @@ export function ArcFanHero({ onOpenJoinModal, onExploreEvents }: ArcFanHeroProps
             </button>
           </div>
         </div>
-
-        {/* Primary Call to Actions */}
-        <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mb-10">
-          <button
-            type="button"
-            onClick={() => onOpenJoinModal("attendee")}
-            className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-neutral-950 hover:bg-neutral-800 text-white font-bold text-sm transition-all flex items-center justify-center gap-2.5 shadow-md hover:scale-105 active:scale-95 cursor-pointer"
-          >
-            <span>Get Kinjo Free</span>
-            <ArrowRight className="w-4 h-4 text-[#FFD45C]" />
-          </button>
-
-          <button
-            type="button"
-            onClick={onExploreEvents}
-            className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-white hover:bg-neutral-100 text-neutral-800 font-semibold text-sm border border-neutral-300 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs hover:scale-105 active:scale-95"
-          >
-            <span>How an Evening Unfolds</span>
-            <ArrowRight className="w-3.5 h-3.5 text-neutral-400" />
-          </button>
-        </div>
-
-        {/* ========================================================================= */}
-        {/* LIVE EDITORIAL ACTIVITY MARQUEE TICKER (Apple/Linear-Grade)                */}
-        {/* ========================================================================= */}
-        <div className="w-full overflow-hidden border-t border-neutral-200/80 pt-4 pb-1">
-          <div className="flex items-center gap-8 animate-marquee whitespace-nowrap text-xs font-mono text-neutral-500">
-            <span className="flex items-center gap-1.5 text-neutral-900 font-semibold">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              NCPA SOUTH MUMBAI: 42 VERIFIED IN THE ROOM
-            </span>
-            <span>•</span>
-            <span className="flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-[#6D28D9]" />
-              94% STRATEGIC COMPATIBILITY: MAYA JOSHI & FINTECH OPERATORS
-            </span>
-            <span>•</span>
-            <span className="flex items-center gap-1.5 text-neutral-900 font-semibold">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              DOUBLE OPT-IN: ZERO UNSOLICITED SALES PITCHES
-            </span>
-            <span>•</span>
-            <span className="flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-[#FFD45C]" />
-              KORAMANGALA ROOFTOP: 52 TECH LEADS CHECKING IN AT SUNSET
-            </span>
-            <span>•</span>
-            <span className="flex items-center gap-1.5 text-neutral-900 font-semibold">
-              💼 FIRST CHEQUES SYNDICATE: ₹50L–₹2CR PRE-SEED ROUNDS OPEN
-            </span>
-            <span>•</span>
-            <span className="flex items-center gap-1.5">
-              ☕ DOUBLE OPT-IN ACCEPTED: PRIVATE CHANNELS LIVE
-            </span>
-          </div>
-        </div>
       </div>
 
-      {/* QUICK-READ INSIGHTS MODAL */}
+      {/* QUICK-READ INSIGHTS MODAL (Zero Emojis, Bespoke Architectural Dialog) */}
       <AnimatePresence>
         {modalCard && (
           <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
